@@ -42,6 +42,16 @@ void preorder(Node * root){
 	preorder(root->right);
 }
 
+Node * FindMin(Node * root){
+	Node * current = root;
+	
+	while(current->left != NULL){
+		current = current->left;
+	}
+	
+	return current;
+}
+
 bool Search(Node * root, int data){
 	if (root == NULL) return false;
 	else if (root->data == data) return true;
@@ -61,6 +71,36 @@ int FindHeight(Node * root){
 	return max(FindHeight(root->left),FindHeight(root->right))+1;
 }
 
+Node * Delete(Node * root, int data){
+	if (root == NULL) return root;
+	else if (data < root->data) root->left = Delete(root->left,data);
+	else if (data > root->data) root->right = Delete(root->right,data);
+	else
+	{
+		if (root->left == NULL && root->right == NULL){
+			free(root);
+			root = NULL;
+		}
+		else if (root->left == NULL){
+			Node * temp = root;
+			root = root->right;
+			free(temp);
+		}
+		else if (root->right == NULL){
+			Node * temp = root;
+			root = root->left;
+			free(temp);
+		}
+		else {
+			Node * temp = FindMin(root);
+			root->data = temp->data;
+			root->right = Delete(root->right,data);
+		}
+		
+	}
+	return root;
+}
+
 int main(void){
 	
 	Node * root = NULL;
@@ -73,6 +113,8 @@ int main(void){
 	Insert(&root,2);
 	Insert(&root,1);
 	Insert(&root,3);
+	preorder(root);
+	root = Delete(root,1);
 	preorder(root);
 	printf("%d",FindHeight(root));
 	
